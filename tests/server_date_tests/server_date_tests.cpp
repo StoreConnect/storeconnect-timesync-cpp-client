@@ -8,3 +8,7 @@
 TEST(basic_test, two_plus_two_test) {
     EXPECT_EQ(2+2, 4);
 }
+
+TEST(basic_test, basic_http_request) {
+    server_date::get_date("http://www.google.com");
+}
