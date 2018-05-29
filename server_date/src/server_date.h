@@ -16,12 +16,14 @@ class server_date {
 
 public:
     server_date(std::string url);
-    void get_date();
     long long now();
     void sync();
 
 private:
     void dumpResponse(easyhttpcpp::Response::Ptr pResponse);
+    std::string request_date();
+    long long date_from_string(std::string date_s);
+    long long local_now();
 
     std::string url;
     double precision;

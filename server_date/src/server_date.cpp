@@ -3,7 +3,22 @@
 //
 
 #include <server_date.h>
+#include <Poco/DateTime.h>
 
+#define ERROR "ERROR"
+
+long long server_date::local_now() {
+    auto now = std::chrono::system_clock::now();
+    auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
+    return now_ms.time_since_epoch().count();
+}
+
+long long server_date::date_from_string(std::string date_s) {
+    std::tm tm = {};
+    strptime(date_s.c_str(), "%a, %d %b %Y %T", &tm);
+    auto tp = std::chrono::system_clock::from_time_t(std::mktime(&tm));
+    return tp.time_since_epoch().count();
+}
 
 server_date::server_date(std::string url) : url{url}, synchronizing{false} {
     try {
@@ -23,7 +38,8 @@ server_date::server_date(std::string url) : url{url}, synchronizing{false} {
     }
 }
 
-void server_date::get_date() {
+std::string server_date::request_date() {
+    std::string date_res = ERROR;
     // HTTP GET the url
     std::cout << "HTTP GET url: " << url << std::endl;
     try {
@@ -32,12 +48,17 @@ void server_date::get_date() {
             std::cout << "HTTP GET Error: (" << pResponse->getCode() << ")" << std::endl;
         } else {
             std::cout << "HTTP GET Success!" << std::endl;
+            std::string date = pResponse->getHeaders()->getValue("Date", "NOT_FOUND");
+            if (date != "date") {
+                date_res = date;
+            }
         }
         // dump response
-        dumpResponse(pResponse);
+        //dumpResponse(pResponse);
     } catch (const std::exception &e) {
         std::cout << "Error occurred: " << e.what() << std::endl;
     }
+    return date_res;
 }
 
 void server_date::dumpResponse(easyhttpcpp::Response::Ptr pResponse) {
@@ -53,12 +74,34 @@ void server_date::dumpResponse(easyhttpcpp::Response::Ptr pResponse) {
 }
 
 long long server_date::now() {
-    auto now = std::chrono::system_clock::now();
-    auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
-    long long now_epoch = now_ms.time_since_epoch().count();
-    return now_epoch + offset;
+    return local_now() + offset;
+}
+
+void dump_result(std::string server_date_s,
+                 long long server_date,
+                 long long request_time,
+                 long long response_time,
+                 double offset,
+                 double precision) {
+    std::cout << std::endl
+              << "server_date_s: " << server_date_s
+              << "  server_date: " << server_date
+              << "  request_time: " << request_time
+              << "  response_time: " << response_time
+              << "  offset: " << offset
+              << "  precision: " << precision
+              << std::endl << std::endl;
 }
 
 void server_date::sync() {
-
+    long long request_time = local_now();
+    std::string server_date_s = request_date();
+    if (server_date_s != ERROR) {
+        long long response_time = local_now();
+        long long server_date = date_from_string(server_date_s);
+        offset = server_date + precision - response_time;
+        precision = (response_time - request_time) / 2;
+        dump_result(server_date_s, server_date, request_time, response_time, offset, precision);
+    }
 }
+
