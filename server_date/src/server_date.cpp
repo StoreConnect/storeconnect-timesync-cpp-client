@@ -3,47 +3,41 @@
 //
 
 #include <server_date.h>
-#include <iostream>
-#include "easyhttpcpp/EasyHttp.h"
 
-bool server_date::get_date(std::string url) {
 
-    // HTTP GET the url
-    std::cout << "HTTP GET url: " << url << std::endl;
-
+server_date::server_date(std::string url) : url{url}, synchronizing{false} {
     try {
         // cache dir = current working dir; cache size = 100 KB
-        easyhttpcpp::HttpCache::Ptr pCache = easyhttpcpp::HttpCache::createCache(Poco::Path::current(), 1024 * 100);
-
+        pCache = easyhttpcpp::HttpCache::createCache(Poco::Path::current(), 1024 * 100);
         // a default http connection pool
-        easyhttpcpp::ConnectionPool::Ptr pConnectionPool = easyhttpcpp::ConnectionPool::createConnectionPool();
-
+        pConnectionPool = easyhttpcpp::ConnectionPool::createConnectionPool();
         // configure http cache and connection pool instance (optional but recommended)
-        easyhttpcpp::EasyHttp::Builder httpClientBuilder;
-        httpClientBuilder.setCache(pCache)
-                .setConnectionPool(pConnectionPool);
-
+        httpClientBuilder.setCache(pCache).setConnectionPool(pConnectionPool);
         // create http client
-        easyhttpcpp::EasyHttp::Ptr pHttpClient = httpClientBuilder.build();
-
+        pHttpClient = httpClientBuilder.build();
         // create a new request and execute synchronously
-        easyhttpcpp::Request::Builder requestBuilder;
-        easyhttpcpp::Request::Ptr pRequest = requestBuilder.setUrl(url).build();
-        easyhttpcpp::Call::Ptr pCall = pHttpClient->newCall(pRequest);
-        easyhttpcpp::Response::Ptr pResponse = pCall->execute();
+        pRequest = requestBuilder.setUrl(url).build();
+        pCall = pHttpClient->newCall(pRequest);
+    } catch (const std::exception &e) {
+        std::cout << "Error occurred: " << e.what() << std::endl;
+    }
+}
 
+void server_date::get_date() {
+    // HTTP GET the url
+    std::cout << "HTTP GET url: " << url << std::endl;
+    try {
+        easyhttpcpp::Response::Ptr pResponse = pCall->execute();
         if (!pResponse->isSuccessful()) {
             std::cout << "HTTP GET Error: (" << pResponse->getCode() << ")" << std::endl;
         } else {
             std::cout << "HTTP GET Success!" << std::endl;
         }
-
         // dump response
         dumpResponse(pResponse);
-    } catch (const std::exception& e) {
+    } catch (const std::exception &e) {
         std::cout << "Error occurred: " << e.what() << std::endl;
     }
-    return false;
 }
 
 void server_date::dumpResponse(easyhttpcpp::Response::Ptr pResponse) {
@@ -56,4 +50,15 @@ void server_date::dumpResponse(easyhttpcpp::Response::Ptr pResponse) {
     if (Poco::isubstr<std::string>(contentType, "text/html") != std::string::npos) {
         std::cout << "Http response body:\n" << pResponse->getBody()->toString() << std::endl;
     }
+}
+
+long long server_date::now() {
+    auto now = std::chrono::system_clock::now();
+    auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
+    long long now_epoch = now_ms.time_since_epoch().count();
+    return now_epoch + offset;
+}
+
+void server_date::sync() {
+
 }

@@ -10,5 +10,6 @@ TEST(basic_test, two_plus_two_test) {
 }
 
 TEST(basic_test, basic_http_request) {
-    server_date::get_date("http://www.google.com");
+    server_date server_date_instance("http://www.google.com");
+    server_date_instance.get_date();
 }
