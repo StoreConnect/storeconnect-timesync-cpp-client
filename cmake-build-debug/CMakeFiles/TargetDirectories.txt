@@ -1,0 +1,11 @@
+/Users/adrien/Code/Ubudu/PlatformTools/server_date_lib/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/adrien/Code/Ubudu/PlatformTools/server_date_lib/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/adrien/Code/Ubudu/PlatformTools/server_date_lib/cmake-build-debug/server_date/CMakeFiles/rebuild_cache.dir
+/Users/adrien/Code/Ubudu/PlatformTools/server_date_lib/cmake-build-debug/server_date/CMakeFiles/edit_cache.dir
+/Users/adrien/Code/Ubudu/PlatformTools/server_date_lib/cmake-build-debug/server_date/CMakeFiles/ubudu_location_algorithms.dir
+/Users/adrien/Code/Ubudu/PlatformTools/server_date_lib/cmake-build-debug/tests/CMakeFiles/rebuild_cache.dir
+/Users/adrien/Code/Ubudu/PlatformTools/server_date_lib/cmake-build-debug/tests/CMakeFiles/edit_cache.dir
+/Users/adrien/Code/Ubudu/PlatformTools/server_date_lib/cmake-build-debug/tests/CMakeFiles/run_tests.dir
+/Users/adrien/Code/Ubudu/PlatformTools/server_date_lib/cmake-build-debug/tests/server_date_tests/CMakeFiles/rebuild_cache.dir
+/Users/adrien/Code/Ubudu/PlatformTools/server_date_lib/cmake-build-debug/tests/server_date_tests/CMakeFiles/edit_cache.dir
+/Users/adrien/Code/Ubudu/PlatformTools/server_date_lib/cmake-build-debug/tests/server_date_tests/CMakeFiles/run_server_date_tests.dir
