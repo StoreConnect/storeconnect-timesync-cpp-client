@@ -4,7 +4,6 @@
 
 #include <server_date.h>
 
-
-bool server_date::get_date() {
-    return true;
+bool server_date::get_date() {
+    return false;
 }

@@ -3,4 +3,8 @@
 //
 
 #include <server_date.h>
-#include "../test_utils.h"
+#include <gtest/gtest.h>
+
+TEST(basic_test, two_plus_two_test) {
+    EXPECT_EQ(2+2, 4);
+}
