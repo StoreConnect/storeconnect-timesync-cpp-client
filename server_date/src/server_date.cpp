@@ -5,6 +5,8 @@
 #include <server_date.h>
 #include <Poco/DateTime.h>
 #include <thread>
+#include <cstdlib>
+#include <cmath>
 
 #define ERROR "ERROR"
 
@@ -40,11 +42,25 @@ server_date::server_date(std::string url, int sample_count, int refresh_rate)
     }
 }
 
+void server_date::offset_amortization_enabled(bool enabled) {
+    is_amortization_enabled = enabled;
+}
+
 void server_date::auto_synchronize() {
+
     std::thread auto_sync_th = std::thread([&] {
         while(true) {
-            synchronise_date_sync();
-            std::this_thread::sleep_for(std::chrono::seconds(refresh_rate));
+            if(counter_for_refresh==0) {
+                counter_for_refresh = refresh_rate;
+                synchronise_date_sync();
+            } else {
+                counter_for_refresh--;
+            }
+
+            if(is_amortization_enabled) {
+                perform_offset_amortization();
+            }
+            std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     });
 
@@ -112,8 +128,8 @@ void dump_result(std::string server_date_s,
 }
 
 void server_date::synchronise_date_sync() {
-    long long best_precision;
-    long long best_offset;
+    long long best_precision = 0;
+    long long best_offset = 0;
     for (int i = 0; i < sample_count; i++) {
         long long request_time = local_now();
         std::string server_date_s = request_date();
@@ -129,7 +145,43 @@ void server_date::synchronise_date_sync() {
             }
         }
     }
-    offset = best_offset;
-    precision = best_precision;
+
+    if(is_amortization_enabled) {
+        std::cout << "amortization IS running" << std::endl;
+        set_target(best_offset);
+    } else {
+        std::cout << "amortization not running" << std::endl;
+        offset = best_offset;
+        precision = best_precision;
+    }
 }
 
+void server_date::set_target(long long int newOffset) {
+    target = newOffset;
+
+    long delta = static_cast<const long &>(target - offset);
+
+    if (delta > amortization_threshold) {
+        offset = target;
+    }
+}
+
+void server_date::perform_offset_amortization() {
+
+    // Don't let the delta be greater than the amortization_rate in either
+    // direction.
+    long delta = std::max(amortization_rate, std::min<signed long>(amortization_rate, static_cast<const long &>(target - offset)));
+
+    offset += delta;
+
+    std::cout << "amortized offset: " << offset << std::endl;
+}
+
+double server_date::get_precision() {
+    double d = target - offset;
+    return precision + std::fabs(d);
+}
+
+double server_date::get_offset() {
+    return offset;
+}
