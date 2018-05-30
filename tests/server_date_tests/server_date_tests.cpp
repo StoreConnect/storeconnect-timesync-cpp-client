@@ -10,6 +10,8 @@ TEST(basic_test, two_plus_two_test) {
 }
 
 TEST(basic_test, basic_http_request) {
-    server_date server_date_instance("https://www.google.com/", 10);
-    server_date_instance.synchronise_date_sync();
+    server_date server_date_instance("https://www.google.com/", 10, 5);
+    server_date_instance.auto_synchronize();
+    long long server_now = server_date_instance.now();
+    std::cout << "server_now: " << server_now << std::endl;
 }

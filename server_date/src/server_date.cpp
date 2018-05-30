@@ -4,6 +4,7 @@
 
 #include <server_date.h>
 #include <Poco/DateTime.h>
+#include <thread>
 
 #define ERROR "ERROR"
 
@@ -20,8 +21,8 @@ long long server_date::date_from_string(std::string date_s) {
     return tp.time_since_epoch().count();
 }
 
-server_date::server_date(std::string url, int sample_count) : url{url}, synchronizing{false},
-                                                              sample_count{sample_count} {
+server_date::server_date(std::string url, int sample_count, int refresh_rate)
+        : url{url}, sample_count{sample_count}, refresh_rate{refresh_rate} {
     try {
         // cache dir = current working dir; cache size = 100 KB
         pCache = easyhttpcpp::HttpCache::createCache(Poco::Path::current(), 1024 * 100);
@@ -32,8 +33,23 @@ server_date::server_date(std::string url, int sample_count) : url{url}, synchron
         // create http client
         pHttpClient = httpClientBuilder.build();
 
+
+
     } catch (const std::exception &e) {
         std::cout << "Error occurred: " << e.what() << std::endl;
+    }
+}
+
+void server_date::auto_synchronize() {
+    std::thread auto_sync_th = std::thread([&] {
+        while(true) {
+            synchronise_date_sync();
+            std::this_thread::sleep_for(std::chrono::seconds(refresh_rate));
+        }
+    });
+
+    if (auto_sync_th.joinable()) {
+        auto_sync_th.join();
     }
 }
 

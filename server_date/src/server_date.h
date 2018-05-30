@@ -15,9 +15,10 @@
 class server_date {
 
 public:
-    server_date(std::string url, int sample_count);
+    server_date(std::string url, int sample_count, int refresh_rate);
     long long now();
     void synchronise_date_sync();
+    void auto_synchronize();
 
 private:
     void dumpResponse(easyhttpcpp::Response::Ptr pResponse);
@@ -30,7 +31,8 @@ private:
 
     double precision;
     double offset;
-    bool synchronizing;
+
+    int refresh_rate;
 
     easyhttpcpp::HttpCache::Ptr pCache;
     easyhttpcpp::ConnectionPool::Ptr pConnectionPool;
