@@ -20,7 +20,8 @@ long long server_date::date_from_string(std::string date_s) {
     return tp.time_since_epoch().count();
 }
 
-server_date::server_date(std::string url) : url{url}, synchronizing{false} {
+server_date::server_date(std::string url, int sample_count) : url{url}, synchronizing{false},
+                                                              sample_count{sample_count} {
     try {
         // cache dir = current working dir; cache size = 100 KB
         pCache = easyhttpcpp::HttpCache::createCache(Poco::Path::current(), 1024 * 100);
@@ -30,9 +31,7 @@ server_date::server_date(std::string url) : url{url}, synchronizing{false} {
         httpClientBuilder.setCache(pCache).setConnectionPool(pConnectionPool);
         // create http client
         pHttpClient = httpClientBuilder.build();
-        // create a new request and execute synchronously
-        pRequest = requestBuilder.setUrl(url).build();
-        pCall = pHttpClient->newCall(pRequest);
+
     } catch (const std::exception &e) {
         std::cout << "Error occurred: " << e.what() << std::endl;
     }
@@ -43,6 +42,9 @@ std::string server_date::request_date() {
     // HTTP GET the url
     std::cout << "HTTP GET url: " << url << std::endl;
     try {
+        // create a new request and execute synchronously
+        easyhttpcpp::Request::Ptr pRequest = requestBuilder.setUrl(url).build();
+        easyhttpcpp::Call::Ptr pCall = pHttpClient->newCall(pRequest);
         easyhttpcpp::Response::Ptr pResponse = pCall->execute();
         if (!pResponse->isSuccessful()) {
             std::cout << "HTTP GET Error: (" << pResponse->getCode() << ")" << std::endl;
@@ -93,15 +95,25 @@ void dump_result(std::string server_date_s,
               << std::endl << std::endl;
 }
 
-void server_date::sync() {
-    long long request_time = local_now();
-    std::string server_date_s = request_date();
-    if (server_date_s != ERROR) {
-        long long response_time = local_now();
-        long long server_date = date_from_string(server_date_s);
-        offset = server_date + precision - response_time;
-        precision = (response_time - request_time) / 2;
-        dump_result(server_date_s, server_date, request_time, response_time, offset, precision);
+void server_date::synchronise_date_sync() {
+    long long best_precision;
+    long long best_offset;
+    for (int i = 0; i < sample_count; i++) {
+        long long request_time = local_now();
+        std::string server_date_s = request_date();
+        if (server_date_s != ERROR) {
+            long long response_time = local_now();
+            long long server_date = date_from_string(server_date_s);
+            long long tmp_precision = (response_time - request_time) / 2;
+            long long tmp_offset = server_date + tmp_precision - response_time;
+            dump_result(server_date_s, server_date, request_time, response_time, tmp_offset, tmp_precision);
+            if (i == 0 || tmp_precision <= best_precision) {
+                best_offset = tmp_offset;
+                best_precision = tmp_precision;
+            }
+        }
     }
+    offset = best_offset;
+    precision = best_precision;
 }
 

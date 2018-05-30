@@ -15,9 +15,9 @@
 class server_date {
 
 public:
-    server_date(std::string url);
+    server_date(std::string url, int sample_count);
     long long now();
-    void sync();
+    void synchronise_date_sync();
 
 private:
     void dumpResponse(easyhttpcpp::Response::Ptr pResponse);
@@ -26,6 +26,8 @@ private:
     long long local_now();
 
     std::string url;
+    int sample_count;
+
     double precision;
     double offset;
     bool synchronizing;
@@ -35,8 +37,6 @@ private:
     easyhttpcpp::EasyHttp::Builder httpClientBuilder;
     easyhttpcpp::Request::Builder requestBuilder;
     easyhttpcpp::EasyHttp::Ptr pHttpClient;
-    easyhttpcpp::Request::Ptr pRequest;
-    easyhttpcpp::Call::Ptr pCall;
 };
 
 #endif //LOCATION_MULTILATERATION_H

@@ -10,6 +10,6 @@ TEST(basic_test, two_plus_two_test) {
 }
 
 TEST(basic_test, basic_http_request) {
-    server_date server_date_instance("http://www.google.com");
-    server_date_instance.sync();
+    server_date server_date_instance("https://www.google.com/", 10);
+    server_date_instance.synchronise_date_sync();
 }
