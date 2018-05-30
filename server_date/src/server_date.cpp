@@ -24,7 +24,7 @@ long long server_date::date_from_string(std::string date_s) {
 }
 
 server_date::server_date(std::string url, int sample_count, int refresh_rate)
-        : url{url}, sample_count{sample_count}, refresh_rate{refresh_rate} {
+        : url{url}, sample_count{sample_count}, refresh_rate{refresh_rate}, auto_sync_enabled{false} {
     try {
         // cache dir = current working dir; cache size = 100 KB
         pCache = easyhttpcpp::HttpCache::createCache(Poco::Path::current(), 1024 * 100);
@@ -34,9 +34,6 @@ server_date::server_date(std::string url, int sample_count, int refresh_rate)
         httpClientBuilder.setCache(pCache).setConnectionPool(pConnectionPool);
         // create http client
         pHttpClient = httpClientBuilder.build();
-
-
-
     } catch (const std::exception &e) {
         std::cout << "Error occurred: " << e.what() << std::endl;
     }
@@ -47,10 +44,10 @@ void server_date::offset_amortization_enabled(bool enabled) {
 }
 
 void server_date::auto_synchronize() {
-
+    auto_sync_enabled = true;
     std::thread auto_sync_th = std::thread([&] {
-        while(true) {
-            if(counter_for_refresh==0) {
+        while (auto_sync_enabled) {
+            if (counter_for_refresh == 0) {
                 counter_for_refresh = refresh_rate;
                 synchronise_date_sync();
             } else {
@@ -68,14 +65,16 @@ void server_date::auto_synchronize() {
     });
 
     if (auto_sync_th.joinable()) {
-        auto_sync_th.join();
+        auto_sync_th.detach();
     }
+}
+
+void server_date::stop_auto_synchronize() {
+    auto_sync_enabled = false;
 }
 
 std::string server_date::request_date() {
     std::string date_res = ERROR;
-    // HTTP GET the url
-    std::cout << "HTTP GET url: " << url << std::endl;
     try {
         // create a new request and execute synchronously
         easyhttpcpp::Request::Ptr pRequest = requestBuilder.setUrl(url).build();
@@ -84,7 +83,6 @@ std::string server_date::request_date() {
         if (!pResponse->isSuccessful()) {
             std::cout << "HTTP GET Error: (" << pResponse->getCode() << ")" << std::endl;
         } else {
-            std::cout << "HTTP GET Success!" << std::endl;
             std::string date = pResponse->getHeaders()->getValue("Date", "NOT_FOUND");
             if (date != "date") {
                 date_res = date;
@@ -126,8 +124,7 @@ void dump_result(std::string server_date_s,
               << "  request_time: " << request_time
               << "  response_time: " << response_time
               << "  offset: " << offset
-              << "  precision: " << precision
-              << std::endl << std::endl;
+              << "  precision: " << precision;
 }
 
 void server_date::synchronise_date_sync() {

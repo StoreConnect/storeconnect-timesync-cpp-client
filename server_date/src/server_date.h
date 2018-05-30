@@ -20,6 +20,7 @@ public:
     void synchronise_date_sync();
     void auto_synchronize();
     void offset_amortization_enabled(bool enabled);
+    void stop_auto_synchronize();
     double get_precision();
     double get_offset();
 
@@ -33,6 +34,8 @@ private:
 
     std::string url;
     int sample_count;
+
+    bool auto_sync_enabled;
 
     double precision;
     long offset;

@@ -4,6 +4,7 @@
 
 #include <server_date.h>
 #include <gtest/gtest.h>
+#include <thread>
 
 TEST(basic_test, two_plus_two_test) {
     EXPECT_EQ(2+2, 4);
@@ -15,4 +16,7 @@ TEST(basic_test, basic_http_request) {
     server_date_instance.auto_synchronize();
     long long server_now = server_date_instance.now();
     std::cout << "server_now: " << server_now << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+    server_date_instance.stop_auto_synchronize();
+    std::this_thread::sleep_for(std::chrono::seconds(10));
 }
