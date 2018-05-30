@@ -57,10 +57,13 @@ void server_date::auto_synchronize() {
                 counter_for_refresh--;
             }
 
-            if(is_amortization_enabled) {
+            if(is_amortization_enabled && target!=offset) {
                 perform_offset_amortization();
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+            } else {
+                counter_for_refresh = 0;
+                std::this_thread::sleep_for(std::chrono::seconds(refresh_rate));
             }
-            std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     });
 
@@ -115,7 +118,7 @@ void dump_result(std::string server_date_s,
                  long long server_date,
                  long long request_time,
                  long long response_time,
-                 double offset,
+                 long offset,
                  double precision) {
     std::cout << std::endl
               << "server_date_s: " << server_date_s
@@ -147,10 +150,8 @@ void server_date::synchronise_date_sync() {
     }
 
     if(is_amortization_enabled) {
-        std::cout << "amortization IS running" << std::endl;
         set_target(best_offset);
     } else {
-        std::cout << "amortization not running" << std::endl;
         offset = best_offset;
         precision = best_precision;
     }
@@ -158,9 +159,7 @@ void server_date::synchronise_date_sync() {
 
 void server_date::set_target(long long int newOffset) {
     target = newOffset;
-
-    long delta = static_cast<const long &>(target - offset);
-
+    long delta = target - offset;
     if (delta > amortization_threshold) {
         offset = target;
     }
@@ -170,7 +169,7 @@ void server_date::perform_offset_amortization() {
 
     // Don't let the delta be greater than the amortization_rate in either
     // direction.
-    long delta = std::max(amortization_rate, std::min<signed long>(amortization_rate, static_cast<const long &>(target - offset)));
+    long delta = std::max(amortization_rate, std::min<signed long>(amortization_rate, target - offset));
 
     offset += delta;
 

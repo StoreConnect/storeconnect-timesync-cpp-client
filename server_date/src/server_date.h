@@ -35,7 +35,7 @@ private:
     int sample_count;
 
     double precision;
-    double offset;
+    long offset;
 
     int counter_for_refresh = 0;
     int refresh_rate;
