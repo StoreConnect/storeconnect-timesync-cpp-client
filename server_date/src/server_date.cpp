@@ -60,7 +60,7 @@ void server_date::stop_auto_synchronize() {
 }
 
 std::string server_date::request_date() {
-    return http_get->get();
+    return http_get->get(url);
 }
 
 long long server_date::now() {
