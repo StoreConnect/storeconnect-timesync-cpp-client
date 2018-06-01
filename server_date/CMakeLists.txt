@@ -4,6 +4,7 @@ project(server_date)
 
 set(SOURCE_FILES
         src/server_date.cpp
+        src/http_get_interface.cpp
         src/easyhttp_get.cpp)
 
 find_package(OpenSSL REQUIRED)

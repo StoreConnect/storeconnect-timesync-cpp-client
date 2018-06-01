@@ -7,10 +7,13 @@
 
 #define ERROR "ERROR"
 
+#include <string>
+
 class http_get_interface {
 
 public:
-    virtual std::string get(std::string &url)=0;
+    http_get_interface();
+    virtual std::string get(const std::string &url)=0;
 };
 
 #endif //HTTP_GET_INTERFACE_H

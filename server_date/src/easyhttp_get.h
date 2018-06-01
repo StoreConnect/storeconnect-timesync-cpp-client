@@ -14,7 +14,7 @@ class easyhttp_get : public http_get_interface {
 public:
     easyhttp_get();
 
-    std::string get(std::string &url) {
+    std::string get(const std::string &url) {
         std::string date_res = ERROR;
         try {
             // create a new request and execute synchronously
