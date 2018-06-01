@@ -7,7 +7,7 @@
 #include "easyhttp_get.h"
 #include "easyhttpcpp/EasyHttp.h"
 
-void dumpResponse(easyhttpcpp::Response::Ptr pResponse) {
+void easyhttp_get::dumpResponse(easyhttpcpp::Response::Ptr pResponse) {
     std::cout << "Http status code: " << pResponse->getCode() << std::endl;
     std::cout << "Http status message: " << pResponse->getMessage() << std::endl;
     std::cout << "Http response headers:\n" << pResponse->getHeaders()->toString() << std::endl;

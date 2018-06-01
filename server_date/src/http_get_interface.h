@@ -5,6 +5,8 @@
 #ifndef HTTP_GET_INTERFACE_H
 #define HTTP_GET_INTERFACE_H
 
+#define ERROR "ERROR"
+
 class http_get_interface {
 
 public:

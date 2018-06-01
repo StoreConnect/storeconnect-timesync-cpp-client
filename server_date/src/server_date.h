@@ -7,15 +7,14 @@
 
 
 #include <string>
-#include <easyhttpcpp/Response.h>
 #include "models.h"
 #include <iostream>
-#include "easyhttpcpp/EasyHttp.h"
+#include "http_get_interface.h"
 
 class server_date {
 
 public:
-    server_date(std::string url, int sample_count, int refresh_rate);
+    server_date(std::string url, int sample_count, int refresh_rate, http_get_interface & http_interface);
     long long now();
     void synchronise_date_sync();
     void auto_synchronize();
@@ -25,7 +24,6 @@ public:
     double get_offset();
 
 private:
-    void dumpResponse(easyhttpcpp::Response::Ptr pResponse);
     std::string request_date();
     long long date_from_string(std::string date_s);
     long long local_now();
@@ -48,11 +46,7 @@ private:
     long target;
     bool is_amortization_enabled = false;
 
-    easyhttpcpp::HttpCache::Ptr pCache;
-    easyhttpcpp::ConnectionPool::Ptr pConnectionPool;
-    easyhttpcpp::EasyHttp::Builder httpClientBuilder;
-    easyhttpcpp::Request::Builder requestBuilder;
-    easyhttpcpp::EasyHttp::Ptr pHttpClient;
+    http_get_interface *http_get;
 };
 
 #endif //LOCATION_MULTILATERATION_H

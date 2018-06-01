@@ -8,8 +8,6 @@
 #include <cstdlib>
 #include <cmath>
 
-#define ERROR "ERROR"
-
 long long server_date::local_now() {
     auto now = std::chrono::system_clock::now();
     auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
@@ -23,20 +21,8 @@ long long server_date::date_from_string(std::string date_s) {
     return tp.time_since_epoch().count();
 }
 
-server_date::server_date(std::string url, int sample_count, int refresh_rate)
-        : url{url}, sample_count{sample_count}, refresh_rate{refresh_rate}, auto_sync_enabled{false} {
-    try {
-        // cache dir = current working dir; cache size = 100 KB
-        pCache = easyhttpcpp::HttpCache::createCache(Poco::Path::current(), 1024 * 100);
-        // a default http connection pool
-        pConnectionPool = easyhttpcpp::ConnectionPool::createConnectionPool();
-        // configure http cache and connection pool instance (optional but recommended)
-        httpClientBuilder.setCache(pCache).setConnectionPool(pConnectionPool);
-        // create http client
-        pHttpClient = httpClientBuilder.build();
-    } catch (const std::exception &e) {
-        std::cout << "Error occurred: " << e.what() << std::endl;
-    }
+server_date::server_date(std::string url, int sample_count, int refresh_rate, http_get_interface & http_interface)
+        : url{url}, sample_count{sample_count}, refresh_rate{refresh_rate}, auto_sync_enabled{false}, http_get{&http_interface} {
 }
 
 void server_date::offset_amortization_enabled(bool enabled) {
@@ -74,38 +60,7 @@ void server_date::stop_auto_synchronize() {
 }
 
 std::string server_date::request_date() {
-    std::string date_res = ERROR;
-    try {
-        // create a new request and execute synchronously
-        easyhttpcpp::Request::Ptr pRequest = requestBuilder.setUrl(url).build();
-        easyhttpcpp::Call::Ptr pCall = pHttpClient->newCall(pRequest);
-        easyhttpcpp::Response::Ptr pResponse = pCall->execute();
-        if (!pResponse->isSuccessful()) {
-            std::cout << "HTTP GET Error: (" << pResponse->getCode() << ")" << std::endl;
-        } else {
-            std::string date = pResponse->getHeaders()->getValue("Date", "NOT_FOUND");
-            if (date != "date") {
-                date_res = date;
-            }
-        }
-        // dump response
-        //dumpResponse(pResponse);
-    } catch (const std::exception &e) {
-        std::cout << "Error occurred: " << e.what() << std::endl;
-    }
-    return date_res;
-}
-
-void server_date::dumpResponse(easyhttpcpp::Response::Ptr pResponse) {
-    std::cout << "Http status code: " << pResponse->getCode() << std::endl;
-    std::cout << "Http status message: " << pResponse->getMessage() << std::endl;
-    std::cout << "Http response headers:\n" << pResponse->getHeaders()->toString() << std::endl;
-
-    // dump response body if text
-    const std::string contentType = pResponse->getHeaderValue("Content-Type", "");
-    if (Poco::isubstr<std::string>(contentType, "text/html") != std::string::npos) {
-        std::cout << "Http response body:\n" << pResponse->getBody()->toString() << std::endl;
-    }
+    return http_get->get();
 }
 
 long long server_date::now() {
