@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 3.9)
 project(server_date)
 
 set(SOURCE_FILES
-        src/server_date.cpp)
+        src/server_date.cpp
+        src/easyhttp_get.cpp)
 
 find_package(OpenSSL REQUIRED)
 find_package(Poco REQUIRED Foundation Data DataSQLite Net NetSSL Crypto CONFIG)
