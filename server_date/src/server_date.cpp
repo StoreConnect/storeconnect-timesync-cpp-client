@@ -3,7 +3,6 @@
 //
 
 #include <server_date.h>
-#include <Poco/DateTime.h>
 #include <thread>
 #include <cstdlib>
 #include <cmath>
