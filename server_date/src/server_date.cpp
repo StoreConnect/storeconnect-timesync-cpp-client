@@ -6,6 +6,7 @@
 #include <thread>
 #include <cstdlib>
 #include <cmath>
+#include <sstream>
 
 long long server_date::local_now() {
     auto now = std::chrono::system_clock::now();
@@ -20,8 +21,12 @@ long long server_date::date_from_string(std::string date_s) {
     return tp.time_since_epoch().count();
 }
 
-server_date::server_date(std::string url, int sample_count, int refresh_rate, http_get_interface & http_interface)
-        : url{url}, sample_count{sample_count}, refresh_rate{refresh_rate}, auto_sync_enabled{false}, http_get{&http_interface} {
+server_date::server_date(std::string url, int sample_count, int refresh_rate, http_get_interface * http_interface)
+        : url{url}, sample_count{sample_count}, refresh_rate{refresh_rate}, auto_sync_enabled{false}, http_get{http_interface} {
+
+//    delete_http_interface();
+//    http_get = http_interface;
+
 }
 
 void server_date::offset_amortization_enabled(bool enabled) {
@@ -32,6 +37,12 @@ void server_date::auto_synchronize() {
     auto_sync_enabled = true;
     std::thread auto_sync_th = std::thread([&] {
         while (auto_sync_enabled) {
+
+
+            std::stringstream ss;
+            ss << "auto_synchronize counter" << counter_for_refresh;
+            std::string log = ss.str();
+
             if (counter_for_refresh == 0) {
                 counter_for_refresh = refresh_rate;
                 synchronise_date_sync();

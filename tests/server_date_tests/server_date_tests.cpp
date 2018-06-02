@@ -15,7 +15,7 @@ TEST(basic_test, basic_http_request) {
 
     easyhttp_get http_get = *new easyhttp_get();
 
-    server_date server_date_instance("http://www.google.com/", 10, 5, http_get);
+    server_date server_date_instance("http://www.google.com/", 10, 5, &http_get);
     server_date_instance.offset_amortization_enabled(true);
     server_date_instance.auto_synchronize();
     long long server_now = server_date_instance.now();

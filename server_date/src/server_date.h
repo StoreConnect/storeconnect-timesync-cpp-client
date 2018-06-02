@@ -14,7 +14,10 @@
 class server_date {
 
 public:
-    server_date(std::string url, int sample_count, int refresh_rate, http_get_interface & http_interface);
+    server_date(std::string url, int sample_count, int refresh_rate, http_get_interface * http_interface);
+    ~server_date() {
+        delete_http_interface();
+    }
     long long now();
     void synchronise_date_sync();
     void auto_synchronize();
@@ -29,6 +32,11 @@ private:
     long long local_now();
     void set_target(long long int offset);
     void perform_offset_amortization();
+
+    void delete_http_interface() {
+        delete http_get;
+        http_get = 0;
+    }
 
     std::string url;
     int sample_count;
@@ -46,7 +54,7 @@ private:
     long target;
     bool is_amortization_enabled = false;
 
-    http_get_interface *http_get;
+    http_get_interface * http_get;
 };
 
 #endif //LOCATION_MULTILATERATION_H
