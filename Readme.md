@@ -32,3 +32,7 @@ The sample server code in node.js doing this job is attached to this repository 
 2. `node server.js`
 
 Server can be tested in the browser at `http://localhost:3000/time_now`
+
+### Android wrapper
+
+Android wrapper is inside `android_wrapper` directory as an [Android Studio](https://developer.android.com/studio/) 3.1.2 project. Go to this directory to see a separate readme for that project.

@@ -30,7 +30,7 @@ public class ServerDate  {
     private RequestQueue requestQueue;
     private http_get_interface http_get_interface;
 
-    public ServerDate(final Context context) {
+    public ServerDate(final String serverUrl, final Context context) {
 
         requestQueue = Volley.newRequestQueue(context);
 
@@ -53,9 +53,8 @@ public class ServerDate  {
             }
         };
 
-        myServerDate = new server_date("http://192.168.2.242:3000/time_now",10,5, http_get_interface);
+        myServerDate = new server_date(serverUrl,10,5, http_get_interface);
     }
-
 
     public void start() {
         myServerDate.offset_amortization_enabled(true);
@@ -68,5 +67,13 @@ public class ServerDate  {
                 mHandler.postDelayed(this,10000);
             }
         });
+    }
+
+    public void stop() {
+        myServerDate.stop_auto_synchronize();
+    }
+
+    public long now() {
+        return myServerDate.now();
     }
 }

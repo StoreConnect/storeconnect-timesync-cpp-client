@@ -11,7 +11,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 
-        val mServerDate = ServerDate(applicationContext)
+        val mServerDate = ServerDate("http://192.168.2.242:3000/time_now", applicationContext)
 
         mServerDate.start()
     }
