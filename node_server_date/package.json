@@ -1,0 +1,14 @@
+{
+  "name": "server_date",
+  "version": "1.0.0",
+  "description": "Server that reports its time in milliseconds as a response to a GET request",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.3"
+  }
+}
