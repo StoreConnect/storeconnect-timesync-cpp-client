@@ -11,6 +11,7 @@ find_package(Poco REQUIRED Foundation Data DataSQLite Net NetSSL Crypto CONFIG)
 find_package(easyhttpcpp REQUIRED CONFIG)
 
 include_directories(src)
+include_directories(src/third_party)
 
 add_library(server_date ${SOURCE_FILES})
 

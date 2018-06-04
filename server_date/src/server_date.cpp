@@ -22,12 +22,7 @@ long long server_date::date_from_string(std::string date_s) {
 }
 
 server_date::server_date(std::string url, int sample_count, int refresh_rate, http_get_interface * http_interface)
-        : url{url}, sample_count{sample_count}, refresh_rate{refresh_rate}, auto_sync_enabled{false}, http_get{http_interface} {
-
-//    delete_http_interface();
-//    http_get = http_interface;
-
-}
+        : url{url}, sample_count{sample_count}, refresh_rate{refresh_rate}, auto_sync_enabled{false}, http_get{http_interface} {}
 
 void server_date::offset_amortization_enabled(bool enabled) {
     is_amortization_enabled = enabled;
@@ -89,7 +84,7 @@ void dump_result(std::string server_date_s,
               << "  request_time: " << request_time
               << "  response_time: " << response_time
               << "  offset: " << offset
-              << "  precision: " << precision;
+              << "  precision: " << precision << std::endl;
 }
 
 void server_date::synchronise_date_sync() {
@@ -100,7 +95,7 @@ void server_date::synchronise_date_sync() {
         std::string server_date_s = request_date();
         if (server_date_s != ERROR) {
             long long response_time = local_now();
-            long long server_date = date_from_string(server_date_s);
+            long long server_date = std::stol(server_date_s);//date_from_string(server_date_s);
             long long tmp_precision = (response_time - request_time) / 2;
             long long tmp_offset = server_date + tmp_precision - response_time;
             dump_result(server_date_s, server_date, request_time, response_time, tmp_offset, tmp_precision);
@@ -131,7 +126,7 @@ void server_date::perform_offset_amortization() {
 
     // Don't let the delta be greater than the amortization_rate in either
     // direction.
-    long delta = std::max(amortization_rate, std::min<signed long>(amortization_rate, target - offset));
+    long delta = std::max(-amortization_rate, std::min<signed long>(amortization_rate, target - offset));
 
     offset += delta;
 

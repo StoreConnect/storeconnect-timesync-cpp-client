@@ -44,7 +44,7 @@ private:
     bool auto_sync_enabled;
 
     double precision;
-    long offset;
+    long offset = 0;
 
     int counter_for_refresh = 0;
     int refresh_rate;

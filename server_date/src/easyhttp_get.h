@@ -8,6 +8,7 @@
 #include "easyhttpcpp/EasyHttp.h"
 #include <http_get_interface.h>
 #include <iostream>
+#include "third_party/json.hpp"
 
 class easyhttp_get : public http_get_interface {
 
@@ -24,9 +25,11 @@ public:
             if (!pResponse->isSuccessful()) {
                 std::cout << "HTTP GET Error: (" << pResponse->getCode() << ")" << std::endl;
             } else {
-                std::string date = pResponse->getHeaders()->getValue("Date", "NOT_FOUND");
-                if (date != "date") {
-                    date_res = date;
+                nlohmann::json body_json = nlohmann::json::parse(pResponse->getBody()->toString());
+                long now = body_json["time_millis"];
+                std::string now_string = std::to_string(now);
+                if (now_string != "date") {
+                    date_res = now_string;
                 }
             }
         } catch (const std::exception &e) {
