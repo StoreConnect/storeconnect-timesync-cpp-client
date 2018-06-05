@@ -42,7 +42,7 @@ SWIG install instruction for Linux/OS X:
 
 ## How to use android_wrapper project
 
-The sample Android app attached to this project presents a usage of the library. Please note that a valid IP address has to be entered into the constructor.
+The sample Android app attached to this project presents a usage of the library. Please note that a valid IP address has to be entered into the constructor. The android library uses [volley](https://developer.android.com/training/volley/) dependency for HTTP requests handling.
 
 Kotlin code:
 ```
