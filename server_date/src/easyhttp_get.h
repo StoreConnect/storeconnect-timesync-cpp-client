@@ -26,7 +26,7 @@ public:
                 std::cout << "HTTP GET Error: (" << pResponse->getCode() << ")" << std::endl;
             } else {
                 nlohmann::json body_json = nlohmann::json::parse(pResponse->getBody()->toString());
-                long now = body_json["time_millis"];
+                long now = body_json["time_now_millis"];
                 std::string now_string = std::to_string(now);
                 if (now_string != "date") {
                     date_res = now_string;
