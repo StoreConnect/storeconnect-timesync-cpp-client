@@ -116,7 +116,7 @@ void server_date::synchronise_date_sync() {
 
 void server_date::set_target(long long int newOffset) {
     target = newOffset;
-    long delta = target - offset;
+    long delta = abs(target - offset);
     if (delta > amortization_threshold) {
         offset = target;
     }
