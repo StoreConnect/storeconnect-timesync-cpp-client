@@ -52,19 +52,17 @@ mServerDate.start()
 
 ## .so files of the C++ server\_date\_native
 
-`server_date_native` lib is built by the Android Studio IDE for all Android architectures:
+`server_date_native` lib is built by the Android Studio IDE, from only part of the sources of the full C++ [server_date](../server_date) lib, for all Android architectures:
 
 - arm64-v8a
 - armeabi-v7a
 - x86
 - x86_64 
 
-The files can be found in one of the following directories (depending if you build the project in release or debug variant):
+`server_date_native` is used in `com.ubudu.serverdate.ServerDate` java class using [Java Native Interface (JNI)](https://developer.android.com/studio/projects/add-native-code). `com.ubudu.serverdate.ServerDate` is the class that is usable on Android app level to call for server time.
+
+The .so files of the `server_date_native` library, if one wants to use it differently than what is written inside `com.ubudu.serverdate.ServerDate`, can be found in one of the following directories (depending if you build the whole project in release or debug variant):
 
 - `android_wrapper/serverdate/build/intermediates/library_and_local_jars_jni/release/`
-<img src="release.png" alt="drawing" style="width: 300px;"/>
-
-
 - `android_wrapper/serverdate/build/intermediates/library_and_local_jars_jni/debug/`
-<img src="debug.png" alt="drawing" style="width: 300px;"/>
 
