@@ -59,7 +59,7 @@ mServerDate.start()
 - x86
 - x86_64 
 
-`server_date_native` is used in `com.ubudu.serverdate.ServerDate` java class using [Java Native Interface (JNI)](https://developer.android.com/studio/projects/add-native-code). `com.ubudu.serverdate.ServerDate` is the class that is usable on Android app level to call for server time.
+`server_date_native` is used in `com.ubudu.serverdate.ServerDate` java class by using [Java Native Interface (JNI)](https://developer.android.com/studio/projects/add-native-code). `com.ubudu.serverdate.ServerDate` is the class that is usable on Android app level to call for server time.
 
 The .so files of the `server_date_native` library, if one wants to use it differently than what is written inside `com.ubudu.serverdate.ServerDate`, can be found in one of the following directories (depending if you build the whole project in release or debug variant):
 
