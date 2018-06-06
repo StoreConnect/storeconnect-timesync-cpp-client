@@ -95,7 +95,7 @@ void server_date::synchronise_date_sync() {
         std::string server_date_s = request_date();
         if (server_date_s != ERROR) {
             long long response_time = local_now();
-            long long server_date = std::stol(server_date_s);//date_from_string(server_date_s);
+            long long server_date = std::stoll(server_date_s);
             long long tmp_precision = (response_time - request_time) / 2;
             long long tmp_offset = server_date + tmp_precision - response_time;
             dump_result(server_date_s, server_date, request_time, response_time, tmp_offset, tmp_precision);
